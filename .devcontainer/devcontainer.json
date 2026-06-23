@@ -1,6 +1,8 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "features": {
-    "ghcr.io/devcontainers/features/flutter:1": {}
+  "name": "bus_pass-flutter",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "onCreateCommand": "git clone https://github.com/flutter/flutter.git -b 3.32.0 --depth 1 /home/vscode/flutter",
+  "containerEnv": {
+    "PATH": "${containerEnv:PATH}:/home/vscode/flutter/bin"
   }
 }
