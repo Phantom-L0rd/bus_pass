@@ -21,7 +21,7 @@ class _LoginScreenState extends State<LoginScreen>
   late Animation<double> _fadeAnim;
   late Animation<Offset> _slideAnim;
 
-  static const _red = Color(0xFFE8402A); // keeping original red for login
+  static const _red = Color(0xFFE8402A); // Brand color stays hardcoded
 
   @override
   void initState() {
@@ -58,8 +58,11 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Grab the color scheme once for the main build context
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.surface, // Adapts
       body: SafeArea(
         child: FadeTransition(
           opacity: _fadeAnim,
@@ -73,18 +76,20 @@ class _LoginScreenState extends State<LoginScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
+                    // U Logo Box
                     Container(
                       width: 56,
                       height: 56,
                       decoration: BoxDecoration(
-                        color: Colors.black,
+                        // Inverts perfectly! Black/White in light, White/Black in dark
+                        color: colorScheme.onSurface,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Center(
                         child: Text(
                           'U',
                           style: GoogleFonts.bebasNeue(
-                            color: Colors.white,
+                            color: colorScheme.surface, // Inverted text
                             fontSize: 32,
                           ),
                         ),
@@ -96,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen>
                       style: GoogleFonts.bebasNeue(
                         fontSize: 52,
                         height: 1.0,
-                        color: Colors.black,
+                        color: colorScheme.onSurface, // Adapts
                         letterSpacing: 1,
                       ),
                     ),
@@ -105,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen>
                       'Sign in to access your bus pass.',
                       style: GoogleFonts.dmSans(
                         fontSize: 14,
-                        color: Colors.black54,
+                        color: colorScheme.onSurfaceVariant, // Adapts
                       ),
                     ),
                     const SizedBox(height: 40),
@@ -131,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen>
                           _obscurePassword
                               ? Icons.visibility_off_outlined
                               : Icons.visibility_outlined,
-                          color: Colors.black45,
+                          color: colorScheme.onSurfaceVariant, // Adapts
                           size: 20,
                         ),
                         onPressed: () => setState(
@@ -146,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen>
                         onPressed: _login,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _red,
-                          foregroundColor: Colors.white,
+                          foregroundColor: Colors.white, // Safe on red
                           shape: const StadiumBorder(),
                           elevation: 0,
                         ),
@@ -167,7 +172,9 @@ class _LoginScreenState extends State<LoginScreen>
                         Text(
                           "Don't have an account? ",
                           style: GoogleFonts.dmSans(
-                              color: Colors.black54, fontSize: 13),
+                            color: colorScheme.onSurfaceVariant, // Adapts
+                            fontSize: 13,
+                          ),
                         ),
                         GestureDetector(
                           onTap: () => Navigator.of(context).push(
@@ -177,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen>
                           child: Text(
                             'Register',
                             style: GoogleFonts.dmSans(
-                              color: _red,
+                              color: _red, // Brand accent
                               fontWeight: FontWeight.w700,
                               fontSize: 13,
                             ),
@@ -195,15 +202,18 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  Widget _buildLabel(String text) => Text(
-        text,
-        style: GoogleFonts.dmSans(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: Colors.black54,
-          letterSpacing: 0.8,
-        ),
-      );
+  Widget _buildLabel(String text) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Text(
+      text,
+      style: GoogleFonts.dmSans(
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+        color: colorScheme.onSurfaceVariant, // Adapts
+        letterSpacing: 0.8,
+      ),
+    );
+  }
 
   Widget _buildTextField({
     required TextEditingController controller,
@@ -211,25 +221,35 @@ class _LoginScreenState extends State<LoginScreen>
     bool obscure = false,
     String? Function(String?)? validator,
     Widget? suffix,
-  }) =>
-      TextFormField(
-        controller: controller,
-        obscureText: obscure,
-        validator: validator,
-        style: GoogleFonts.dmSans(fontSize: 15, color: Colors.black87),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: GoogleFonts.dmSans(color: Colors.black26, fontSize: 14),
-          suffixIcon: suffix,
-          filled: true,
-          fillColor: const Color(0xFFF5F5F5),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide.none,
-          ),
-          errorStyle: GoogleFonts.dmSans(fontSize: 11),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return TextFormField(
+      controller: controller,
+      obscureText: obscure,
+      validator: validator,
+      style: GoogleFonts.dmSans(
+        fontSize: 15,
+        color: colorScheme.onSurface, // Adapts
+      ),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: GoogleFonts.dmSans(
+          color: colorScheme.onSurfaceVariant.withOpacity(0.5), // Adapts
+          fontSize: 14,
         ),
-      );
+        suffixIcon: suffix,
+        filled: true,
+        fillColor: colorScheme
+            .surfaceContainerHighest, // Perfect adaptive input background
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide.none,
+        ),
+        errorStyle: GoogleFonts.dmSans(fontSize: 11),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+      ),
+    );
+  }
 }

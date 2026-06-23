@@ -21,6 +21,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordCtrl = TextEditingController();
   bool _obscure = true;
 
+  // Keep red as it's your specific brand/accent color
   static const _red = Color(0xFFE8402A);
 
   void _register() {
@@ -54,14 +55,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Grab the color scheme once for clean code
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.surface, // Adapts to Light/Dark
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: Colors.black87, size: 20),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: colorScheme.onSurface, // Adapts
+            size: 20,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -78,13 +85,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: GoogleFonts.bebasNeue(
                     fontSize: 52,
                     height: 1.0,
-                    color: Colors.black,
+                    color: colorScheme.onSurface, // Adapts
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   'Fill in your student details below.',
-                  style: GoogleFonts.dmSans(fontSize: 14, color: Colors.black54),
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14,
+                    color: colorScheme
+                        .onSurfaceVariant, // Adapts (replaces black54)
+                  ),
                 ),
                 const SizedBox(height: 32),
                 Row(
@@ -151,7 +162,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       _obscure
                           ? Icons.visibility_off_outlined
                           : Icons.visibility_outlined,
-                      color: Colors.black45,
+                      color: colorScheme.onSurfaceVariant, // Adapts
                       size: 18,
                     ),
                     onPressed: () => setState(() => _obscure = !_obscure),
@@ -167,7 +178,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onPressed: _register,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _red,
-                      foregroundColor: Colors.white,
+                      foregroundColor: Colors
+                          .white, // White text on a red button is always safe
                       shape: const StadiumBorder(),
                       elevation: 0,
                     ),
@@ -196,42 +208,53 @@ class _RegisterScreenState extends State<RegisterScreen> {
     bool obscure = false,
     Widget? suffix,
     String? Function(String?)? validator,
-  }) =>
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.dmSans(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Colors.black54,
-              letterSpacing: 0.8,
-            ),
+  }) {
+    // Grab colors locally for the helper widget
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.dmSans(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: colorScheme.onSurfaceVariant, // Adapts
+            letterSpacing: 0.8,
           ),
-          const SizedBox(height: 6),
-          TextFormField(
-            controller: controller,
-            obscureText: obscure,
-            validator: validator ??
-                (v) => v == null || v.isEmpty ? 'Required' : null,
-            style: GoogleFonts.dmSans(fontSize: 14, color: Colors.black87),
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle:
-                  GoogleFonts.dmSans(color: Colors.black26, fontSize: 13),
-              suffixIcon: suffix,
-              filled: true,
-              fillColor: const Color(0xFFF5F5F5),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              errorStyle: GoogleFonts.dmSans(fontSize: 10),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            ),
+        ),
+        const SizedBox(height: 6),
+        TextFormField(
+          controller: controller,
+          obscureText: obscure,
+          validator:
+              validator ?? (v) => v == null || v.isEmpty ? 'Required' : null,
+          style: GoogleFonts.dmSans(
+            fontSize: 14,
+            color: colorScheme.onSurface, // Adapts (replaces black87)
           ),
-        ],
-      );
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: GoogleFonts.dmSans(
+              color: colorScheme.onSurfaceVariant
+                  .withOpacity(0.5), // Adapts (replaces black26)
+              fontSize: 13,
+            ),
+            suffixIcon: suffix,
+            filled: true,
+            // Magic M3 color: Light grey in light mode, subtle dark grey in dark mode!
+            fillColor: colorScheme.surfaceContainerHighest,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            errorStyle: GoogleFonts.dmSans(fontSize: 10),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          ),
+        ),
+      ],
+    );
+  }
 }
